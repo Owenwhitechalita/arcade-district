@@ -1,1 +1,508 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcade District</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #080b14;
+      color: #f4f5ff;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 28px 7%;
+      background: #101525;
+      border-bottom: 1px solid #242d45;
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #65e6ff;
+    }
+
+    .logo span {
+      color: #a78bfa;
+    }
+
+    .hero {
+      padding: 55px 7% 35px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 54px);
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: #a4aec5;
+      font-size: 16px;
+    }
+
+    .search-area {
+      padding: 0 7% 30px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    #search {
+      flex: 1;
+      min-width: 220px;
+      padding: 15px;
+      border: 1px solid #303b57;
+      border-radius: 9px;
+      background: #141c2e;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+
+    #search:focus {
+      border-color: #65e6ff;
+    }
+
+    .filters {
+      padding: 0 7% 30px;
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .filter {
+      padding: 10px 16px;
+      border: 1px solid #303b57;
+      border-radius: 30px;
+      background: #141c2e;
+      color: #c5cce0;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .filter:hover,
+    .filter.active {
+      background: #65e6ff;
+      color: #08101b;
+      border-color: #65e6ff;
+    }
+
+    .section-title {
+      padding: 0 7%;
+      margin: 15px 0 20px;
+      font-size: 23px;
+    }
+
+    .game-grid {
+      padding: 0 7% 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .game-card {
+      background: #11192a;
+      border: 1px solid #26324b;
+      border-radius: 13px;
+      overflow: hidden;
+      transition: 0.2s;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      border-color: #65e6ff;
+    }
+
+    .game-image {
+      height: 135px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 55px;
+      background: linear-gradient(135deg, #172b49, #332052);
+    }
+
+    .game-info {
+      padding: 17px;
+    }
+
+    .game-info h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .game-category {
+      color: #9caac6;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+
+    .play-button {
+      display: block;
+      width: 100%;
+      padding: 11px;
+      text-align: center;
+      text-decoration: none;
+      background: #65e6ff;
+      color: #07111b;
+      border-radius: 7px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .play-button:hover {
+      background: #a1f0ff;
+    }
+
+    #no-results {
+      display: none;
+      padding: 20px 7% 60px;
+      color: #a4aec5;
+    }
+
+    footer {
+      padding: 25px;
+      text-align: center;
+      color: #78849d;
+      background: #101525;
+      border-top: 1px solid #242d45;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 22px 5%;
+      }
+
+      .hero {
+        padding: 40px 5% 25px;
+      }
+
+      .search-area,
+      .filters,
+      .game-grid {
+        padding-left: 5%;
+        padding-right: 5%;
+      }
+
+      .section-title {
+        padding: 0 5%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo">ARCADE <span>DISTRICT</span></div>
+  </header>
+
+  <section class="hero">
+    <h1>Find Your Next Game.</h1>
+    <p>Racing, shooters, survival, sandbox, platformers and more.</p>
+  </section>
+
+  <div class="search-area">
+    <input
+      id="search"
+      type="text"
+      placeholder="Search games..."
+      oninput="filterGames()"
+    >
+  </div>
+
+  <div class="filters">
+    <button class="filter active" onclick="setCategory('All', this)">All Games</button>
+    <button class="filter" onclick="setCategory('Shooter', this)">Shooters</button>
+    <button class="filter" onclick="setCategory('Racing', this)">Racing</button>
+    <button class="filter" onclick="setCategory('Sandbox', this)">Sandbox</button>
+    <button class="filter" onclick="setCategory('Survival', this)">Survival</button>
+    <button class="filter" onclick="setCategory('Platformer', this)">Platformers</button>
+    <button class="filter" onclick="setCategory('Fighting', this)">Fighting</button>
+    <button class="filter" onclick="setCategory('Multiplayer', this)">Multiplayer</button>
+    <button class="filter" onclick="setCategory('Strategy', this)">Strategy</button>
+    <button class="filter" onclick="setCategory('Arcade', this)">Arcade</button>
+  </div>
+
+  <h2 class="section-title">All Games</h2>
+
+  <main class="game-grid" id="gameGrid"></main>
+
+  <p id="no-results">No games found. Try another search.</p>
+
+  <footer>
+    Arcade District · Your gaming destination
+  </footer>
+
+  <script>
+    const games = [
+      // ORIGINAL ARCADE DISTRICT GAMES
+      {
+        name: "Neon Racer",
+        category: "Racing",
+        icon: "🏎️",
+        url: "https://slowroads.io/"
+      },
+      {
+        name: "Star Defender",
+        category: "Shooter",
+        icon: "🚀",
+        url: "https://diep.io/"
+      },
+      {
+        name: "Pixel Jumper",
+        category: "Platformer",
+        icon: "👾",
+        url: "https://www.thewayoftheninja.org/"
+      },
+      {
+        name: "Snake Arena",
+        category: "Arcade",
+        icon: "🐍",
+        url: "https://slither.io/"
+      },
+      {
+        name: "Cell Eater",
+        category: "Survival",
+        icon: "🦠",
+        url: "https://agar.io/"
+      },
+      {
+        name: "Tank Zone",
+        category: "Shooter",
+        icon: "💥",
+        url: "https://warbrokers.io/"
+      },
+
+      // SHOOTERS AND COMBAT
+      {
+        name: "Krunker.io",
+        category: "Shooter",
+        icon: "🔫",
+        url: "https://krunker.io/"
+      },
+      {
+        name: "Shell Shockers",
+        category: "Shooter",
+        icon: "🥚",
+        url: "https://shellshock.io/"
+      },
+      {
+        name: "Venge.io",
+        category: "Shooter",
+        icon: "🎯",
+        url: "https://venge.io/"
+      },
+      {
+        name: "War Brokers",
+        category: "Shooter",
+        icon: "💣",
+        url: "https://warbrokers.io/"
+      },
+      {
+        name: "Deadshot.io",
+        category: "Shooter",
+        icon: "🎮",
+        url: "https://deadshot.io/"
+      },
+
+      // RACING AND DRIVING
+      {
+        name: "Smash Karts",
+        category: "Racing",
+        icon: "🏁",
+        url: "https://smashkarts.io/"
+      },
+      {
+        name: "Slow Roads",
+        category: "Racing",
+        icon: "🚗",
+        url: "https://slowroads.io/"
+      },
+      {
+        name: "Madalin Games",
+        category: "Racing",
+        icon: "🏎️",
+        url: "https://www.madalingames.com/"
+      },
+      {
+        name: "Drift Hunters",
+        category: "Racing",
+        icon: "🚘",
+        url: "https://drifthunters.com/"
+      },
+      {
+        name: "Karting World",
+        category: "Racing",
+        icon: "🏎️",
+        url: "https://www.viverse.com/genre/Game"
+      },
+
+      // SANDBOX AND SURVIVAL
+      {
+        name: "Bloxd.io",
+        category: "Sandbox",
+        icon: "🧱",
+        url: "https://bloxd.io/"
+      },
+      {
+        name: "Minecraft Classic",
+        category: "Sandbox",
+        icon: "⛏️",
+        url: "https://classic.minecraft.net/"
+      },
+      {
+        name: "ZombsRoyale.io",
+        category: "Survival",
+        icon: "🧟",
+        url: "https://zombsroyale.io/"
+      },
+      {
+        name: "Survev.io",
+        category: "Survival",
+        icon: "🪖",
+        url: "https://survev.io/"
+      },
+      {
+        name: "Diep.io",
+        category: "Shooter",
+        icon: "🔵",
+        url: "https://diep.io/"
+      },
+
+      // PLATFORMERS AND FIGHTING
+      {
+        name: "N",
+        category: "Platformer",
+        icon: "🥷",
+        url: "https://www.thewayoftheninja.org/"
+      },
+      {
+        name: "Fancy Pants Adventure",
+        category: "Platformer",
+        icon: "🏃",
+        url: "https://www.fancypantsadventures.com/"
+      },
+      {
+        name: "Bonk.io",
+        category: "Fighting",
+        icon: "⚔️",
+        url: "https://bonk.io/"
+      },
+      {
+        name: "1v1.LOL",
+        category: "Fighting",
+        icon: "🏆",
+        url: "https://1v1.lol/"
+      },
+      {
+        name: "Narrow One",
+        category: "Shooter",
+        icon: "🏹",
+        url: "https://narrow.one/"
+      },
+
+      // MULTIPLAYER AND STRATEGY
+      {
+        name: "Agar.io",
+        category: "Multiplayer",
+        icon: "🟢",
+        url: "https://agar.io/"
+      },
+      {
+        name: "Slither.io",
+        category: "Multiplayer",
+        icon: "🐍",
+        url: "https://slither.io/"
+      },
+      {
+        name: "TETR.IO",
+        category: "Arcade",
+        icon: "🟪",
+        url: "https://tetr.io/"
+      },
+      {
+        name: "Skribbl.io",
+        category: "Multiplayer",
+        icon: "✏️",
+        url: "https://skribbl.io/"
+      },
+      {
+        name: "Universal Paperclips",
+        category: "Strategy",
+        icon: "📎",
+        url: "https://www.decisionproblem.com/paperclips/"
+      }
+    ];
+
+    let selectedCategory = "All";
+
+    function renderGames() {
+      const grid = document.getElementById("gameGrid");
+      const search = document.getElementById("search").value.toLowerCase();
+
+      const filtered = games.filter(game => {
+        const matchesSearch =
+          game.name.toLowerCase().includes(search) ||
+          game.category.toLowerCase().includes(search);
+
+        const matchesCategory =
+          selectedCategory === "All" ||
+          game.category === selectedCategory;
+
+        return matchesSearch && matchesCategory;
+      });
+
+      grid.innerHTML = filtered.map(game => `
+        <article class="game-card">
+          <div class="game-image">${game.icon}</div>
+          <div class="game-info">
+            <h3>${game.name}</h3>
+            <p class="game-category">${game.category}</p>
+            <a
+              class="play-button"
+              href="${game.url}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >PLAY NOW</a>
+          </div>
+        </article>
+      `).join("");
+
+      document.getElementById("no-results").style.display =
+        filtered.length === 0 ? "block" : "none";
+    }
+
+    function setCategory(category, button) {
+      selectedCategory = category;
+
+      document.querySelectorAll(".filter").forEach(item => {
+        item.classList.remove("active");
+      });
+
+      button.classList.add("active");
+      renderGames();
+    }
+
+    function filterGames() {
+      renderGames();
+    }
+
+    renderGames();
+  </script>
+
+</body>
+</html>
+
